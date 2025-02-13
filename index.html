@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>MaiJump</title>
+    <script src="jump_Mai.js"></script>
+    <script src="hani.js"></script>
+    <script>
+      "use strict"
+    /*
+    class Mai {
+      constructor() {}
+      move() {}
+      tick() {}
+    }
+    */
+      let ctx;
+      let mai;
+      let hani=[];
+      let timer;
+      let distance = 0;
+      let hit = false;
+      let hanihani = 0;
+
+      window.onload = init;
+
+      function init() {
+        let canvas = document.getElementById("canvas");
+        canvas.onmousedown = mymousedown;
+        ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = false;
+        mai = new Mai("mai");
+        hani.push( new Hani("hani",8)) ;
+        timer = setInterval( mainLoop,50 );
+      }
+
+      function mainLoop() {
+        mai.move();
+        mai.anime();
+        for(let i = 0; i<hani.length ; i++ ) {
+          hani[i].exec();
+          hani[i].move();
+          hani[i].anime();
+          if( hani[i].isHit(mai.maiX,mai.maiY,mai.maiSize) ) {
+            hit =true;
+            mai.hitted = true;
+        }
+        }
+        if(!hit) { distance++; }
+        
+        if(hanihani!=0) hanihani++;
+        if(hanihani>15) hanihani=0
+
+        if(distance%300==0) {
+          hani.push( new Hani("hani",8)) ;
+          hanihani = 1;
+        }
+        repaint();
+      }
+
+      function repaint() {
+        ctx.fillStyle = "#aaaaaa";
+        ctx.fillRect(0,0,450,600);
+        ctx.beginPath();
+        ctx.moveTo(0,350);
+        ctx.lineTo(450,350);
+        ctx.stroke();
+        ctx.fillStyle = "#000000";
+        ctx.fillText(distance,80,230);
+        if(hit) ctx.fillText("game over",50,250);
+        if(hanihani!=0) ctx.fillText("HANI!>",400,300);
+        ctx.drawImage(mai.maiImage,mai.a_frame*16,0,16,16, mai.maiX, mai.maiY, mai.maiSize, mai.maiSize);
+        
+        for(let i = 0; i<hani.length ; i++ ) {
+          ctx.drawImage(hani[i].haniImage,hani[i].a_frame*16,0,16,16, hani[i].haniX, hani[i].haniY, hani[i].haniSize, hani[i].haniSize);
+        }
+      }
+
+      function mymousedown(e) {
+        if(!hit) {
+          mai.clicked();
+        }
+      }
+
+    </script>
+  </head>
+  <body>
+    <canvas id="canvas" width="450" height="600""></canvas>
+    <img class="pixel" id="mai" src="mai.png" style="display: none;">
+    <img class="pixel" id="hani" src="hani.png" style="display: none;">
+  </body>
+</html>
